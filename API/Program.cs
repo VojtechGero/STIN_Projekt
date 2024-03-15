@@ -1,4 +1,5 @@
-using static System.Runtime.InteropServices.JavaScript.JSType;
+using API;
+using System.Text.Json;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,5 +23,5 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
-app.MapGet("/{id}", (string id) => $"\n{id}");
+
 app.Run();
