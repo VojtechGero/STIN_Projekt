@@ -56,7 +56,7 @@ namespace TestPlatba
         public void RejectedTest()
         {
             Platba p = new Platba();
-            p.typ_platby = "SLOP";
+            p.typ_platby = "NULL";
             p.castka = 1;
             p.mena = "EUR";
             string json = JsonSerializer.Serialize(p);
