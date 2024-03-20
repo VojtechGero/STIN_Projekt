@@ -1,3 +1,5 @@
+using API.Models;
+using API.Services;
 using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
 namespace API.Controllers
@@ -13,29 +15,28 @@ namespace API.Controllers
             _logger = logger;
         }
 
-        private string pay(float castka,string mena)
-        {
-            return castka.ToString() + " "+mena;
-        }
+        
 
         [HttpGet(Name = "GetPlatba")]
         public string Get(string json)
         {
             try
             {
-                Platba p = JsonSerializer.Deserialize<Platba>(json);
-                if (p.typ_platby == "CARD")
+                Platba? p = JsonSerializer.Deserialize<Platba>(json);
+                if(p is null)
                 {
-                    return pay(p.castka, p.mena);
+                    throw new ArgumentException("Invalid Json");
                 }
-                if(p.typ_platby == "CASH")
-                {
-                    return p.castka.ToString() + p.mena + " by cash";
-                }
-                return "NOT CARD";
-            }catch (Exception ex)
+                PaymentHandler payment = new PaymentHandler(new CardPaymentService(),new CashPaymentService());
+                return payment.pay(p);
+            }
+            catch(ArgumentException e)
             {
-                return ex.Message;
+                return e.Message;
+            }
+            catch (Exception)
+            {
+                return "Payment rejected";
             }
             
         }
