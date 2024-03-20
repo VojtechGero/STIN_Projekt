@@ -3,7 +3,7 @@ using System.Text.Json;
 namespace API.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("platba")]
     public class PlatbaController : ControllerBase
     {
         private readonly ILogger<PlatbaController> _logger;
