@@ -22,17 +22,13 @@ namespace API.Controllers
         {
             try
             {
-                Platba? p = JsonSerializer.Deserialize<Platba>(json);
-                if(p is null)
-                {
-                    throw new ArgumentException("Invalid Json");
-                }
+                Platba p = JsonSerializer.Deserialize<Platba>(json);
                 PaymentHandler payment = new PaymentHandler(new CardPaymentService(),new CashPaymentService());
                 return payment.pay(p);
             }
-            catch(ArgumentException e)
+            catch(JsonException e)
             {
-                return e.Message;
+                return "Invalid Json";
             }
             catch (Exception)
             {

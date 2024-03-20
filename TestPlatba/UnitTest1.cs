@@ -53,7 +53,7 @@ namespace TestPlatba
         }
 
         [TestMethod]
-        public void InvalidTest()
+        public void RejectedTest()
         {
             Platba p = new Platba();
             p.typ_platby = "SLOP";
@@ -74,11 +74,11 @@ namespace TestPlatba
         }
 
         [TestMethod]
-        public void FailTest()
+        public void InvalidTest()
         {
             var x = new String('x',1);
             string json = JsonSerializer.Serialize(x);
-            string expected = "Payment rejected";
+            string expected = "Invalid Json";
 
             var factory = new LoggerFactory();
             var logger = factory.CreateLogger<API.Controllers.PlatbaController>();
