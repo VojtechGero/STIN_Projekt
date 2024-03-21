@@ -22,11 +22,11 @@ namespace API.Controllers
         {
             try
             {
-                Platba p = JsonSerializer.Deserialize<Platba>(json);
-                PaymentHandler payment = new PaymentHandler(new CardPaymentService(),new CashPaymentService());
-                return payment.pay(p);
+                var platba = Platba.parseJson(json);
+                var payment = new PaymentHandler(new CardPaymentService(),new CashPaymentService());
+                return payment.pay(platba);
             }
-            catch(JsonException e)
+            catch(JsonException)
             {
                 return "Invalid Json";
             }
@@ -34,7 +34,7 @@ namespace API.Controllers
             {
                 return "Payment rejected";
             }
-            
         }
+
     }
 }
