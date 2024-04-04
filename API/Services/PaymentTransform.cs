@@ -1,5 +1,6 @@
 ﻿using API.Models;
-
+using System.Xml;
+using System.Xml.Serialization;
 namespace API.Services
 {
     public class PaymentTransform
@@ -12,9 +13,23 @@ namespace API.Services
         {
             return pay(p.castka, p.mena);
         }
+        public static string cash(string xml)
+        {
+            return xml;
+        }
         public static string byCash(Platba p)
         {
-            return $"{p.castka} {p.mena} by cash";
+            XmlSerializer x = new XmlSerializer(p.GetType());
+            string s;
+            using (var sww = new StringWriter())
+            {
+                using (XmlWriter writer = XmlWriter.Create(sww))
+                {
+                    x.Serialize(writer, p);
+                    s = sww.ToString();
+                }
+            }
+            return cash(s);
         }
     }
 }

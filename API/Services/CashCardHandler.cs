@@ -2,11 +2,12 @@
 
 namespace API.Services
 {
-    public class PaymentHandler
+    public class CashCardHandler : IPaymentHandler
     {
-        Dictionary<string, IPaymentService> payments = new Dictionary<string, IPaymentService>();
-        public PaymentHandler(CardPaymentService card,CashPaymentService cash)
+        public Dictionary<string, IPaymentService> payments { get; set; }
+        public CashCardHandler(IPaymentService card, IPaymentService cash)
         {
+            payments=new Dictionary<string, IPaymentService>();
             payments.Add("CARD", card);
             payments.Add("CASH", cash);
         }
@@ -16,5 +17,5 @@ namespace API.Services
             IPaymentService payment = payments[p.typ_platby];
             return payment.Pay(p);
         }
-    }
+}
 }

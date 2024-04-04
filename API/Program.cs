@@ -1,9 +1,12 @@
 using API;
+using API.Services;
 using System.Text.Json;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
+builder.Services.AddScoped<CashPaymentService>();
+builder.Services.AddScoped<CardPaymentService>();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

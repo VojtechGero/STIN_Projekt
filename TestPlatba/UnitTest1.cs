@@ -1,6 +1,9 @@
 using API.Models;
 using Microsoft.Extensions.Logging;
 using System.Text.Json;
+using System.Xml.Serialization;
+using System.Xml;
+using API.Services;
 namespace TestPlatba
 {
     [TestClass]
@@ -10,14 +13,30 @@ namespace TestPlatba
         {
             var factory = new LoggerFactory();
             var logger = factory.CreateLogger<API.Controllers.PlatbaController>();
-            var controller = new API.Controllers.PlatbaController(logger);
+            CashPaymentService cash = new CashPaymentService();
+            CardPaymentService card = new CardPaymentService();
+            var controller = new API.Controllers.PlatbaController(logger,card,cash);
             return controller.Get(s);
+        }
+
+        private string toXML(Platba p)
+        {
+            XmlSerializer x = new XmlSerializer(p.GetType());
+            string s;
+            using (var sww = new StringWriter())
+            {
+                using (XmlWriter writer = XmlWriter.Create(sww))
+                {
+                    x.Serialize(writer, p);
+                    s = sww.ToString();
+                }
+            }
+            return s;
         }
 
         [TestMethod]
         public void CardTest()
         {
-            //Arrange
             Platba p=new Platba();
             p.typ_platby = "CARD";
             p.castka = 1;
@@ -39,7 +58,7 @@ namespace TestPlatba
             p.castka = 1;
             p.mena = "EUR";
             string json = JsonSerializer.Serialize(p);
-            string expected = "1 EUR by cash";
+            string expected = toXML(p);
 
             var actual = GetPlatba(json);
 
@@ -67,10 +86,6 @@ namespace TestPlatba
             var x = new String('x',1);
             string json = JsonSerializer.Serialize(x);
             string expected = "Invalid Json";
-
-            var factory = new LoggerFactory();
-            var logger = factory.CreateLogger<API.Controllers.PlatbaController>();
-            var controller = new API.Controllers.PlatbaController(logger);
 
             var actual = GetPlatba(json);
 
@@ -104,7 +119,7 @@ namespace TestPlatba
                 mena = "EUR"
             };
             string json = JsonSerializer.Serialize(platba);
-            string expected = "50 EUR by cash";
+            string expected = toXML(platba);
 
             var actual = GetPlatba(json);
 
@@ -183,6 +198,17 @@ namespace TestPlatba
         {
             var json = "{\"castka\": 100, \"mena\": \"USD\", \"datum\": \"2024-03-21T12:00:00\"}";
             string expected = "Payment rejected";
+
+            var actual = GetPlatba(json);
+
+            Assert.AreEqual(expected, actual);
+        }
+
+        [TestMethod]
+        public void randomText_returnSlop()
+        {
+            var json = "SLOP";
+            string expected = "Invalid Json";
 
             var actual = GetPlatba(json);
 
